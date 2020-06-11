@@ -10,7 +10,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False
 }
-dag = DAG(dag_id='Simple_DAG', default_args=args, schedule_interval='@daily', concurrency=1, max_active_runs=1,
+dag = DAG(dag_id='Simple_DAG', default_args=default_args, schedule_interval='@daily', concurrency=1, max_active_runs=1,
           catchup=False)
 task_1 = BashOperator(
     task_id='task_1',
