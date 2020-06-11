@@ -1,49 +1,24 @@
-"""Anonymize raw sms data files from TIM Brazil.
-Frequency: Hourly incremental extraction for the previous hour.
-Inputs:
-    S3: timbrazil-internal/ocs/ocs_sms/y/m/d/h/
-Outputs:
-    S3: timbrazil-public/ocs/ocs_sms/y/m/d/h/
-Alerts:
-    airflow@juvo.com
-"""
-from datetime import timedelta
-
-from airflow import DAG
-
-from dag.operators.ingestion import PIIOperator
-from dag.settings import timbrazil
-from dag.tasks.timbrazil import anonymization
-
-default_args = {
-    'owner': 'aaron.mangum',
-    'depends_on_past': False,
-    'email': ['airflow@juvo.com'],
-    'email_on_failure': True,
-    'email_on_retry': False,
-    'sla': timedelta(hours=24),
-    'start_date': timbrazil.LAUNCH_DATE,
+import airflow
+from airflow.operators.bash_operator import BashOperator
+from airflow.models import DAG
+from datetime import datetime, timedelta
+args = {
+    'owner': 'Pawel',
+    'start_date': datetime(2018, 12, 02, 16, 40, 00),
+    'email': ['bigdataetlcom@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False
 }
-
-dag = DAG(
-    'timbrazil.anonymize_sms', schedule_interval='@hourly', default_args=default_args
+dag = DAG(dag_id='Simple_DAG', default_args=args, schedule_interval='@daily', concurrency=1, max_active_runs=1,
+          catchup=False)
+task_1 = BashOperator(
+    task_id='task_1',
+    bash_command='echo Hello, This is my first DAG in Airflow!',
+    dag=dag
 )
-
-PATH = 's3://{}/ocs/ocs_sms'
-MSISDN_COLUMN = 22
-IMEI_COLUMN = 390
-PII_COLUMNS = [22, 32, 372, 373, 374, 375, 376, 377, 390, 396]
-
-ingest = PIIOperator(
-    task_id='ingest',
-    input_path=PATH.format(timbrazil.RAW_CARRIER_BUCKET),
-    output_path=PATH.format(timbrazil.ANONYMIZED_CARRIER_BUCKET),
-    uuid_read_path=timbrazil.UUID_READ_PATH,
-    uuid_write_path=timbrazil.UUID_WRITE_PATH,
-    anonymizer_conn_id=timbrazil.ANONYMIZER_CONN_ID,
-    msisdn_column=MSISDN_COLUMN,
-    pii_columns=PII_COLUMNS,
-    transform_func=anonymization.transformer_factory(MSISDN_COLUMN, IMEI_COLUMN),
-    csv_kwargs=anonymization.get_csv_kwargs('gzip'),
-    dag=dag,
+task_2 = BashOperator(
+    task_id='task_2',
+    bash_command='echo With two operators!',
+    dag=dag
 )
+task_1 >> task_2
