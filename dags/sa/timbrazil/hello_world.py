@@ -3,9 +3,8 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.models import DAG
 from datetime import datetime, timedelta
 args = {
-    'owner': 'Pawel',
-    'start_date': datetime(2018, 12, 02, 16, 40, 00),
-    'email': ['bigdataetlcom@gmail.com'],
+    'owner': 'kalai',
+    'email': ['kalaiucd@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False
 }
