@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 args = {
     'owner': 'kalai',
     'email': ['kalaiucd@gmail.com'],
+    'start_date': days_ago(2),
     'email_on_failure': False,
     'email_on_retry': False
 }
