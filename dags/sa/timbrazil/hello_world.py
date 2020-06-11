@@ -2,6 +2,7 @@ import airflow
 from airflow.operators.bash_operator import BashOperator
 from airflow.models import DAG
 from datetime import datetime, timedelta
+from airflow.utils.dates import days_ago
 args = {
     'owner': 'kalai',
     'email': ['kalaiucd@gmail.com'],
